@@ -1,9 +1,20 @@
-const output = document.querySelector(".screen");
-const numbOp = document.querySelectorAll(".visible")
+const display = document.querySelector(".screen")
+const buttons = document.querySelectorAll(".btn" )
+const symbols = ['%', '/', 'x', '-', '+', 'C', '=' ]
+let firstVal = ''
+let secondVal = ''
+let symbol = ''
 
-numbOp.forEach(key => {
-    key.addEventListener('click', function(){
-        alert(key.innerHTML)
+
+buttons.forEach(button => {
+    button.addEventListener('click', function(){
+        const{innerText: btnValue} = button;
+        if(firstVal && symbol){
+            symbol = btnValue
+        }
+
+
+
+        display.innerText += btnValue;
     })
 });
-
