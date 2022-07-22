@@ -40,6 +40,10 @@ function clear(){
             return display.innerText = '';
 }
 
+function delet(){
+    display.innerText = display.innerText.slice(0, - 1);
+}
+
 for(let button of buttons){
     button.addEventListener('click', function(){
         
@@ -52,6 +56,9 @@ for(let button of buttons){
         }
         if (btnValue === 'C'){
             return clear()
+        }
+        if (btnValue === 'Del'){
+            return delet()
         }
         
         if(firstVal && btnIsSymbol){
