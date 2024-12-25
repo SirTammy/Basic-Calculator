@@ -1,122 +1,99 @@
-const display = document.querySelector(".screen")
-const buttons = document.querySelectorAll(".btn" )
-const allSymbols = ['%', '/', 'x', '-', '+', 'C', '=' ]
-const equal = document.querySelector(".equalTo");
-let firstVal = ''
-let secondVal = ''
-let symbol = ''
-let result = ''
+const display = document.querySelector(".screen");
+const buttons = document.querySelectorAll(".btn");
+const allSymbols = ['%', '/', 'x', '-', '+', 'C', '='];
+let firstVal = '';
+let secondVal = '';
+let symbol = '';
+let result = '';
+let calclDone = false;
 
+const calculate = () => {
+    firstVal = parseFloat(firstVal);
+    secondVal = parseFloat(secondVal);
 
-const calculate = () =>{
-    firstVal = parseFloat(firstVal)
-    secondVal = parseFloat(secondVal)
+    if (symbol == '+') result = firstVal + secondVal;
+    if (symbol == '-') result = firstVal - secondVal;
+    if (symbol == '/') result = secondVal === 0 ? 'Error' : firstVal / secondVal;
+    if (symbol == '%') result = firstVal % secondVal;
+    if (symbol == 'x') result = firstVal * secondVal;
 
-    if( symbol == '+'){
-        result = firstVal + secondVal;
-    }
-    if( symbol == '-'){
-        result = firstVal - secondVal;
-    }
-    if( symbol == '/'){
-        result = firstVal / secondVal;
-    }
-    if( symbol == '%'){
-        result = firstVal % secondVal;
-    }
-    if( symbol == 'x'){
-        result = firstVal * secondVal;
-    }
-    display.innerText = result
-    firstVal = result;
-    secondVal = ''
-    
-}
+    display.innerText = result === 'Error' ? result : result.toString();
+    firstVal = result === 'Error' ? '' : result.toString();
+    secondVal = '';
+};
 
-function clear(){
-            firstVal = '';
-            secondVal = '';
-            symbol = ''
-            return display.innerText = '';
-}
+const clear = () => {
+    firstVal = '';
+    secondVal = '';
+    symbol = '';
+    display.innerText = '';
+};
 
-for(let button of buttons){
-    button.addEventListener('click', function(){
-        
-        const{innerText: btnValue} = button;
-        const btnIsSymbol = allSymbols.includes(btnValue)
+for (let button of buttons) {
+    button.addEventListener('click', function () {
+        const btnValue = button.innerText;
+        const btnIsSymbol = allSymbols.includes(btnValue);
 
-
-        if (!secondVal && btnValue === ''){
-            return null
-        }
-        if (btnValue === 'C'){
-            return clear()
-        }
-        
-        if(firstVal && btnIsSymbol){
-            if(secondVal){
-                 calculate()
-            }
-            symbol = btnValue
-        } else if(!symbol){
-            firstVal += btnValue
-        } else if(symbol){
-            secondVal += btnValue
+        if (btnValue === 'C') {
+            clear();
+            calclDone = false;
+            return;
         }
 
+        if (btnValue === 'DEL') {
+            handleDelete();
+            return;
+        }
 
-        if(btnValue !== '='){
-            display.innerText += btnValue
-        } 
+        if (btnIsSymbol) {
+            handleSymbol(btnValue);
+        } else if (btnValue === '=') {
+            calculate();
+            calclDone = true;
+        } else {
+            handleNumber(btnValue);
+        }
 
-        
-    })
+        if (btnValue !== '=' && btnValue !== 'C') {
+            display.innerText = firstVal + (symbol || '') + secondVal;
+        }
+    });
 }
 
-// equal.addEventListener('click', function(){
-//     calculate()
-// })
+function handleSymbol(symbolVal) {
+    if (calclDone) {
+        secondVal = '';
+        calclDone = false;
+    } else if (secondVal) {
+        calculate();
+    }
+    symbol = symbolVal;
+}
 
+function handleNumber(num) {
+    if (num === '.' && (symbol ? secondVal.includes('.') : firstVal.includes('.'))) {
+        return;
+    }
+    if (calclDone) {
+        firstVal = num;
+        secondVal = '';
+        symbol = '';
+        display.innerText = num;
+        calclDone = false;
+    } else if (!symbol) {
+        firstVal += num;
+    } else {
+        secondVal += num;
+    }
+}
 
-// function calculate (){
-//     firstVal = parseFloat(firstVal)
-//     secondVal = parseFloat(secondVal)
-    
-//     if(symbol === '+'){
-//         firstVal + secondVal
-//     }
-    
-    
-//     display.innerText = result
-//     firstVal = result
-//     secondVal = ''
-// }
-
-// for(let button of buttons) {
-//     button.addEventListener('click', function(){
-//         const{innerText: btnValue} = button;
-//         const btnValueIsSymbol = allSymbols.includes(btnValue)
-        
-        
-//         if(firstVal && btnValueIsSymbol){
-//             if(secondVal){
-//                 calculate()
-//             }
-//             symbol = btnValue
-//         } 
-        
-        
-//         else if(!symbol){
-//             firstVal += btnValue
-//         } else if(symbol){
-//             secondVal += btnValue
-//         }
-
-
-//         if(btnValue !== '='){
-//             display.innerText += btnValue;
-//         }
-        
-//     })
-// });
+function handleDelete() {
+    if (!symbol) {
+        firstVal = firstVal.slice(0, -1);
+    } else if (secondVal) {
+        secondVal = secondVal.slice(0, -1);
+    } else {
+        symbol = '';
+    }
+    display.innerText = firstVal + (symbol || '') + secondVal;
+}
